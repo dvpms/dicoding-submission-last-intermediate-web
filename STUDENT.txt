@@ -1,2 +1,2 @@
-APP_URL=<url_aplikasi>
+APP_URL=https://last-submission-web-intermediate.netlify.app/#/register
 MAP_SERVICE_API_KEY=<api_key>
