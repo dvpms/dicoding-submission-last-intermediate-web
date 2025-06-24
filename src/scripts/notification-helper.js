@@ -39,8 +39,14 @@ const NotificationHelper = {
       );
 
       if (existingSubscription) {
-        console.log("Pengguna sudah subscribe. Proses selesai.");
-        alert("Anda sudah berlangganan notifikasi.");
+        console.log("Pengguna sudah subscribe.", existingSubscription);
+        if (
+          confirm(
+            "Anda sudah berlangganan notifikasi. Apakah Anda ingin berhenti berlangganan?"
+          )
+        ) {
+          await this.unsubscribe(existingSubscription);
+        }
         return;
       }
 
@@ -83,6 +89,23 @@ const NotificationHelper = {
     } catch (error) {
       console.error("Gagal pada proses subscribe atau kirim ke server:", error);
       alert(`Gagal subscribe notifikasi: ${error.message}`);
+    }
+  },
+  async unsubscribe(existingSubscription) {
+    try {
+      await AuthModel.unsubscribePushNotification(
+        existingSubscription.endpoint
+      );
+      console.log("Berhasil unsubscribe dari server API.");
+
+      const unsubscribed = await existingSubscription.unsubscribe();
+      if (unsubscribed) {
+        console.log("Berhasil unsubscribe dari browser.");
+        alert("Anda berhasil berhenti berlangganan notifikasi.");
+      }
+    } catch (error) {
+      console.error("Gagal saat proses unsubscribe:", error);
+      alert(`Gagal berhenti berlangganan: ${error.message}`);
     }
   },
 };

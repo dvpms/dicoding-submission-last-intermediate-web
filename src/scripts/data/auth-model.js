@@ -78,6 +78,35 @@ const AuthModel = {
     return responseJson;
   },
 
+  async unsubscribePushNotification(endpoint) {
+    const token = this.getUserToken();
+    if (!token) {
+      throw new Error(
+        "Anda harus login untuk berhenti berlangganan notifikasi."
+      );
+    }
+
+    const response = await fetch(
+      `${CONFIG.BASE_URL}${CONFIG.SUBSCRIBE_ENDPOINT}`,
+      {
+        method: "DELETE", // Menggunakan metode DELETE
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ endpoint }), // Kirim endpoint sesuai dokumentasi
+      }
+    );
+
+    const responseJson = await response.json();
+
+    if (responseJson.error) {
+      throw new Error(responseJson.message);
+    }
+
+    return responseJson;
+  },
+
   saveUserToken(token) {
     localStorage.setItem("userToken", token);
   },
