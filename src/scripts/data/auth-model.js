@@ -48,6 +48,14 @@ const AuthModel = {
     if (!token) {
       throw new Error("Anda harus login untuk berlangganan notifikasi.");
     }
+    const subscriptionJson = subscription.toJSON();
+    const payload = {
+      endpoint: subscriptionJson.endpoint,
+      keys: {
+        p256dh: subscriptionJson.keys.p256dh,
+        auth: subscriptionJson.keys.auth,
+      },
+    };
 
     const response = await fetch(
       `${CONFIG.BASE_URL}${CONFIG.SUBSCRIBE_ENDPOINT}`,
@@ -57,7 +65,7 @@ const AuthModel = {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(subscription),
+        body: JSON.stringify(payload),
       }
     );
 

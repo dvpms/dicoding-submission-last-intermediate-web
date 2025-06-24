@@ -24,22 +24,19 @@ class HomePresenter {
       this._view.displayStories(storiesFromNetwork);
     } catch (error) {
       console.log(
-        "Gagal mengambil dari jaringan, mencoba mengambil dari IndexedDB..."
+        "Gagal mengambil dari jaringan. Menampilkan cerita yang tersimpan offline."
       );
       try {
         const storiesFromDb = await StoryDbHelper.getAllStories();
         if (storiesFromDb && storiesFromDb.length > 0) {
-          console.log("Berhasil mengambil cerita dari IndexedDB.");
           this._view.displayStories(storiesFromDb);
         } else {
-          console.log("IndexedDB juga kosong.");
           this._view.showError(
-            error.message || "Data tidak dapat dimuat, periksa koneksi Anda."
+            "Anda sedang offline dan belum ada cerita yang disimpan."
           );
         }
       } catch (dbError) {
-        console.error("Gagal mengambil dari IndexedDB:", dbError);
-        this._view.showError(error.message || "Data tidak dapat dimuat.");
+        this._view.showError("Gagal mengakses data offline.");
       }
     } finally {
       this._view.hideLoading();

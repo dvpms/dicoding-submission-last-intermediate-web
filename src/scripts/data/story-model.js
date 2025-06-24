@@ -39,8 +39,8 @@ const StoryModel = {
         throw new Error("Data cerita tidak ditemukan dalam respons API.");
       }
 
-      await StoryDbHelper.putAllStories(responseJson.listStory);
-      console.log("Cerita dari API berhasil disimpan ke IndexedDB.");
+      // await StoryDbHelper.putAllStories(responseJson.listStory);
+      // console.log("Cerita dari API berhasil disimpan ke IndexedDB.");
 
       return responseJson.listStory;
     } catch (error) {

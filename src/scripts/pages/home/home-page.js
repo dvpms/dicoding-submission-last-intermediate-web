@@ -7,6 +7,9 @@ class HomePage {
   constructor() {
     this._presenter = new HomePresenter({ view: this });
     this._mainContentContainer = null;
+    this._loadingIndicator = null;
+    this._storiesErrorMessage = null;
+    this.currentStories = [];
   }
 
   async render() {
@@ -15,37 +18,21 @@ class HomePage {
         <h2 class="home-page__title">Daftar Cerita Terbaru</h2>
         <div id="loadingIndicator" class="loading-indicator" style="display: none;">
           <p>Memuat cerita...</p>
-          </div>
-        <div id="storiesErrorMessage" class="error-message" style="display: none;">
-          </div>
-        <div id="storyListContainer" class="story-list">
-          </div>
+        </div>
+        <div id="storiesErrorMessage" class="error-message" style="display: none;"></div>
+        <div id="storyListContainer" class="story-list"></div>
       </section>
     `;
   }
 
   async afterRender() {
+    this.currentStories = []; // Reset setiap kali render ulang
     this._mainContentContainer = document.querySelector("#storyListContainer");
     this._loadingIndicator = document.querySelector("#loadingIndicator");
     this._storiesErrorMessage = document.querySelector("#storiesErrorMessage");
 
     await this._presenter.initializePage();
-    this._mainContentContainer.addEventListener("click", async (event) => {
-      if (event.target.classList.contains("delete-offline-button")) {
-        const storyId = event.target.dataset.id;
-        console.log(`Tombol hapus untuk ID ${storyId} diklik.`);
-
-        if (
-          confirm(
-            "Apakah Anda yakin ingin menghapus cerita ini dari cache offline?"
-          )
-        ) {
-          await StoryDbHelper.deleteStory(storyId);
-          console.log(`Cerita ${storyId} dihapus dari IndexedDB.`);
-          document.querySelector(`#story-${storyId}`)?.remove();
-        }
-      }
-    });
+    this._setupActionListeners();
   }
 
   redirectToLogin() {
@@ -70,14 +57,23 @@ class HomePage {
     }
   }
 
-  displayStories(stories) {
+  async displayStories(stories) {
     if (!this._mainContentContainer) return;
+
+    // Simpan daftar cerita saat ini untuk digunakan oleh event listener nanti
+    this.currentStories = stories;
+
+    // Ambil daftar ID cerita yang sudah tersimpan di IndexedDB
+    const savedStories = await StoryDbHelper.getAllStories();
+    const savedStoryIds = new Set(savedStories.map((story) => story.id));
 
     this._mainContentContainer.innerHTML = "";
     if (stories && stories.length > 0) {
       stories.forEach((story) => {
+        const isSaved = savedStoryIds.has(story.id);
+
         const storyItemElement = document.createElement("div");
-        storyItemElement.innerHTML = createStoryItemTemplate(story);
+        storyItemElement.innerHTML = createStoryItemTemplate(story, isSaved);
 
         this._mainContentContainer.appendChild(
           storyItemElement.firstElementChild
@@ -96,6 +92,63 @@ class HomePage {
     } else {
       this.showEmptyStories();
     }
+  }
+
+  _setupActionListeners() {
+    this._mainContentContainer.addEventListener("click", async (event) => {
+      // Cari elemen tombol terdekat yang diklik
+      const button = event.target.closest("button");
+      if (!button) return;
+
+      const storyId = button.dataset.id;
+
+      // Logika untuk tombol "Simpan"
+      if (button.classList.contains("save-offline-button")) {
+        // Cari objek cerita lengkap dari daftar yang kita simpan
+        const storyToSave = this.currentStories.find(
+          (story) => story.id === storyId
+        );
+        if (storyToSave) {
+          await StoryDbHelper.putStory(storyToSave);
+          alert("Cerita berhasil disimpan untuk mode offline!");
+          this._updateButtonState(storyId, true);
+        }
+      }
+
+      // Logika untuk tombol "Hapus"
+      if (button.classList.contains("delete-offline-button")) {
+        if (
+          confirm(
+            "Apakah Anda yakin ingin menghapus cerita ini dari daftar offline?"
+          )
+        ) {
+          await StoryDbHelper.deleteStory(storyId);
+          alert("Cerita berhasil dihapus dari daftar offline.");
+          this._updateButtonState(storyId, false);
+        }
+      }
+    });
+  }
+
+  _updateButtonState(storyId, isSaved) {
+    const storyElement = document.querySelector(`#story-${storyId}`);
+    if (!storyElement) return;
+
+    const story = this.currentStories.find((s) => s.id === storyId);
+    if (!story) return;
+
+    const actionContainer = storyElement.querySelector(".story-item__actions");
+    if (!actionContainer) return;
+
+    const newButtonHtml = isSaved
+      ? `<button class="button button-danger delete-offline-button" data-id="${storyId}" aria-label="Hapus cerita ${story.name} dari daftar offline">
+           <i class="fas fa-trash-alt"></i> Hapus dari Offline
+         </button>`
+      : `<button class="button button-primary save-offline-button" data-id="${storyId}" aria-label="Simpan cerita ${story.name} untuk offline">
+           <i class="fas fa-save"></i> Simpan untuk Offline
+         </button>`;
+
+    actionContainer.innerHTML = newButtonHtml;
   }
 
   _initializeMap(mapId, lat, lon, storyName, storyDescription) {

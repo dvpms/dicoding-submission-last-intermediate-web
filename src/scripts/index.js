@@ -15,21 +15,18 @@ function updateNavigationUI() {
   const userGreetingElement = document.querySelector("#userGreeting");
   const logoutButton = document.querySelector("#logoutButton");
 
-  if (userToken) {
-    if (navLoginLink) navLoginLink.style.display = "none";
-    if (navLogoutLink) navLogoutLink.style.display = "list-item";
-    if (navAddStoryLink) navAddStoryLink.style.display = "list-item";
-    if (userGreetingElement && userName) {
-      userGreetingElement.textContent = `Halo, ${userName}!`;
-      userGreetingElement.style.display = "inline";
-    }
-    if (userGreetingElement && !userName) {
-      userGreetingElement.textContent = `Halo, Pengguna!`;
-      userGreetingElement.style.display = "inline";
-    }
+  // Pastikan semua elemen ditemukan sebelum mencoba mengubahnya
+  if (navLoginLink && navLogoutLink && navAddStoryLink && userGreetingElement) {
+    if (userToken) {
+      // --- JIKA PENGGUNA LOGIN ---
+      navLoginLink.style.display = "none";
+      navLogoutLink.style.display = "list-item";
+      navAddStoryLink.style.display = "list-item";
 
-    if (logoutButton) {
-      if (!logoutButton.dataset.listenerAttached) {
+      userGreetingElement.textContent = `Halo, ${userName || "Pengguna"}!`;
+      userGreetingElement.style.display = "inline";
+
+      if (logoutButton && !logoutButton.dataset.listenerAttached) {
         logoutButton.addEventListener("click", (event) => {
           event.preventDefault();
           AuthModel.removeUserToken();
@@ -39,15 +36,17 @@ function updateNavigationUI() {
         });
         logoutButton.dataset.listenerAttached = "true";
       }
-    }
-  } else {
-    if (navLoginLink) navLoginLink.style.display = "list-item";
-    if (navLogoutLink) navLogoutLink.style.display = "none";
-    if (navAddStoryLink) navAddStoryLink.style.display = "none";
-    if (userGreetingElement) {
+    } else {
+      // --- JIKA PENGGUNA TIDAK LOGIN ---
+      navLoginLink.style.display = "list-item";
+      navLogoutLink.style.display = "none";
+      navAddStoryLink.style.display = "none";
+
       userGreetingElement.textContent = "";
       userGreetingElement.style.display = "none";
     }
+  } else {
+    console.error("Satu atau lebih elemen navigasi tidak ditemukan di DOM.");
   }
 }
 

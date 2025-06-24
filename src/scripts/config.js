@@ -7,7 +7,7 @@ const CONFIG = {
   GET_ALL_STORIES_ENDPOINT: "/stories",
   ADD_NEW_STORY_ENDPOINT: "/stories",
   ADD_NEW_STORY_GUEST_ENDPOINT: "/stories/guest",
-  SUBSCRIBE_ENDPOINT: "/subscribe",
+  SUBSCRIBE_ENDPOINT: "/notifications/subscribe",
 };
 
 export default CONFIG;

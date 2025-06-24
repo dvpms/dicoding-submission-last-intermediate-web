@@ -3,19 +3,20 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <meta name="theme-color" content="#367EAA" />
+
     <meta name="view-transition" content="same-origin" />
+
     <link rel="shortcut icon" href="/favicon.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
-    <script
-      src="https://kit.fontawesome.com/YOUR_KIT_CODE.js"
-      crossorigin="anonymous"
-    ></script>
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -24,11 +25,13 @@
       referrerpolicy="no-referrer"
     />
 
-    <title>App</title>
-    <script type="module" src="/scripts/index.js"></script>
+    <title>Story App</title>
+
+    <script type="module" src="/src/scripts/index.js"></script>
   </head>
   <body>
     <a href="#main-content" class="skip-to-content">Skip to Main Content</a>
+
     <header>
       <div class="main-header container">
         <a class="brand-name" href="#/">Story App</a>
@@ -42,7 +45,29 @@
           <i class="fas fa-bell"></i>
         </button>
 
-        <nav id="navigation-drawer" class="navigation-drawer"></nav>
+        <nav id="navigation-drawer" class="navigation-drawer">
+          <ul id="nav-list" class="nav-list">
+            <li id="nav-add-story" style="display: none">
+              <a href="#/add-story"
+                ><i class="fas fa-plus-circle"></i> Tambah Cerita</a
+              >
+            </li>
+            <li>
+              <a href="#/"><i class="fas fa-home"></i> Beranda</a>
+            </li>
+            <li><a href="#/about">About</a></li>
+
+            <li id="nav-login">
+              <a href="#/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+            </li>
+            <li id="nav-logout" style="display: none">
+              <a href="#" id="logoutButton"
+                ><i class="fas fa-sign-out-alt"></i> Logout</a
+              >
+            </li>
+          </ul>
+        </nav>
+
         <button
           id="drawer-button"
           class="drawer-button"
@@ -54,5 +79,12 @@
     </header>
 
     <main id="main-content" class="main-content" tabindex="-1"></main>
+
+    <footer
+      class="app-footer"
+      style="text-align: center; padding: 20px; border-top: 1px solid #eee"
+    >
+      <p>Story App &copy; 2024 - Dicoding Submission</p>
+    </footer>
   </body>
 </html>
