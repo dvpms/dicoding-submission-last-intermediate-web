@@ -118,6 +118,9 @@ const AuthModel = {
   removeUserToken() {
     localStorage.removeItem("userToken");
   },
+  removeUserName() {
+    localStorage.removeItem("userName");
+  },
 
   saveUserName(name) {
     localStorage.setItem("userName", name);

@@ -5,6 +5,19 @@ import App from "./pages/app";
 import AuthModel from "./data/auth-model";
 import NotificationHelper from "./notification-helper";
 
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+// Override ikon default Leaflet dengan gambar yang sudah diimpor
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
 function updateNavigationUI() {
   const userToken = AuthModel.getUserToken();
   const userName = AuthModel.getUserName();
@@ -14,6 +27,7 @@ function updateNavigationUI() {
   const navAddStoryLink = document.querySelector("#nav-add-story");
   const userGreetingElement = document.querySelector("#userGreeting");
   const logoutButton = document.querySelector("#logoutButton");
+  const navSavedLink = document.querySelector("#nav-saved");
 
   // Pastikan semua elemen ditemukan sebelum mencoba mengubahnya
   if (navLoginLink && navLogoutLink && navAddStoryLink && userGreetingElement) {
@@ -22,6 +36,7 @@ function updateNavigationUI() {
       navLoginLink.style.display = "none";
       navLogoutLink.style.display = "list-item";
       navAddStoryLink.style.display = "list-item";
+      navSavedLink.style.display = "list-item";
 
       userGreetingElement.textContent = `Halo, ${userName || "Pengguna"}!`;
       userGreetingElement.style.display = "inline";
@@ -41,6 +56,7 @@ function updateNavigationUI() {
       navLoginLink.style.display = "list-item";
       navLogoutLink.style.display = "none";
       navAddStoryLink.style.display = "none";
+      navSavedLink.style.display = "none";
 
       userGreetingElement.textContent = "";
       userGreetingElement.style.display = "none";
